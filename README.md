@@ -17,4 +17,3 @@ Organisation login: org@demo.com / demo123
 - ASP.NET Core 9 MVC
 - Entity Framework Core + SQLite
 - EPPlus (Excel import)
-- Bootstrap 5
