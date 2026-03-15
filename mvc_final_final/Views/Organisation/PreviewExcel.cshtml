@@ -1,0 +1,72 @@
+@model List<mvc_final_final.Services.NeedPreview>
+@{
+    ViewData["Title"] = "Preview Import";
+    var valid   = Model.Where(r => r.IsValid).ToList();
+    var invalid = Model.Where(r => !r.IsValid).ToList();
+}
+<div style="max-width:760px;margin:0 auto;padding:28px 20px 48px">
+    <div style="margin-bottom:20px;font-size:13px;color:#9CA3AF">
+        <a asp-action="Dashboard" style="color:#9CA3AF;text-decoration:none">Dashboard</a> ›
+        <a asp-action="ImportExcel" style="color:#9CA3AF;text-decoration:none">Import Excel</a> ›
+        <span style="color:#1F2937">Preview</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+        <div>
+            <h1 style="font-size:20px;font-weight:700;color:#1F2937;font-family:Georgia,serif;margin-bottom:4px">Preview — @Model.Count rows found</h1>
+            <p style="font-size:14px;color:#9CA3AF">Review the rows below before confirming the import.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+            <span class="prio low" style="font-size:12px;padding:5px 14px">@valid.Count valid</span>
+            @if (invalid.Any()) { <span class="prio critical" style="font-size:12px;padding:5px 14px">@invalid.Count error(s)</span> }
+        </div>
+    </div>
+    @if (invalid.Any()) {
+        <div class="app-alert error" style="margin-bottom:16px">
+            <div><strong>@invalid.Count row(s) will be skipped:</strong>
+                <ul style="margin:6px 0 0 16px;padding:0;font-size:13px">@foreach (var r in invalid) { <li>@r.RowError</li> }</ul>
+            </div>
+        </div>
+    }
+    <div class="card-app" style="margin-bottom:16px">
+        <table class="table-app">
+            <thead><tr><th>Status</th><th>Item name</th><th>Category</th><th>Qty needed</th><th>Priority</th></tr></thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    string prioClass;
+                    if (row.Priority == mvc_final_final.Models.Priority.Critical) prioClass = "critical";
+                    else if (row.Priority == mvc_final_final.Models.Priority.Normal) prioClass = "normal";
+                    else prioClass = "low";
+                    <tr style="@(!row.IsValid ? "background:#FEF2F2" : "")">
+                        <td>
+                            @if (row.IsValid) { <span style="color:#059669;font-weight:700;font-size:13px">✓ Valid</span> }
+                            else              { <span style="color:#DC2626;font-weight:700;font-size:13px">✗ Error</span> }
+                        </td>
+                        <td>
+                            <strong>@row.ItemName</strong>
+                            @if (!row.IsValid) { <div style="font-size:12px;color:#DC2626;margin-top:2px">@row.RowError</div> }
+                        </td>
+                        <td style="color:#6B7280">@row.Category</td>
+                        <td style="font-weight:700">@row.QuantityNeeded</td>
+                        <td><span class="prio @prioClass" style="font-size:10px">@row.Priority</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div style="padding:16px 18px;border-top:1px solid #F3F4F6;display:flex;align-items:center;justify-content:space-between;background:#F9FAFB">
+            <span style="font-size:13px;color:#6B7280;font-family:-apple-system,sans-serif">
+                @if (invalid.Any()) { <text>@invalid.Count row(s) skipped · </text> }
+                <strong>@valid.Count need(s)</strong> will be created
+            </span>
+            <div style="display:flex;gap:8px">
+                <a class="btn-app outline" asp-action="ImportExcel">← Re-upload</a>
+                @if (valid.Any()) {
+                    <form asp-action="ConfirmImport" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-app primary">✓ Import @valid.Count need(s)</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

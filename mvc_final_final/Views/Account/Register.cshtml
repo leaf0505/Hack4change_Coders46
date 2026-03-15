@@ -1,0 +1,28 @@
+@{ ViewData["Title"] = "Create Organisation Account"; }
+<div style="max-width:520px;margin:0 auto;padding:28px 20px 48px">
+    <div style="text-align:center;margin-bottom:24px">
+        <h1 style="font-size:22px;font-weight:700;color:#1F2937;font-family:Georgia,serif;margin-bottom:6px">Create organisation account</h1>
+        <p style="font-size:14px;color:#9CA3AF">Register to post needs and receive donations from the community</p>
+    </div>
+    <div class="card-app">
+        <div style="padding:26px">
+            @if (!ViewContext.ModelState.IsValid) { <div class="app-alert error" style="margin-bottom:16px"><div asp-validation-summary="All"></div></div> }
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;font-family:-apple-system,sans-serif">Your account</div>
+                <div class="form-group-app"><label class="form-label-app">Full name <span class="req">*</span></label><input type="text" name="fullName" class="form-control-app" placeholder="Jane Smith" autofocus required /></div>
+                <div class="form-group-app"><label class="form-label-app">Email address <span class="req">*</span></label><input type="email" name="email" class="form-control-app" placeholder="contact@org.ca" required /></div>
+                <div class="form-group-app"><label class="form-label-app">Password <span class="req">*</span></label><input type="password" name="password" class="form-control-app" placeholder="Minimum 6 characters" required /></div>
+                <div style="height:1px;background:#E8EEF3;margin:20px 0"></div>
+                <div style="font-size:12px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;font-family:-apple-system,sans-serif">Your organisation</div>
+                <div class="form-group-app"><label class="form-label-app">Organisation name <span class="req">*</span></label><input type="text" name="orgName" class="form-control-app" placeholder="Community Centre of Moncton" required /></div>
+                <div class="form-group-app"><label class="form-label-app">Description <span style="font-weight:400;color:#9CA3AF">(optional)</span></label><textarea name="description" class="form-control-app" rows="2" placeholder="Briefly describe your mission..."></textarea></div>
+                <div class="form-group-app"><label class="form-label-app">Phone <span style="font-weight:400;color:#9CA3AF">(optional)</span></label><input type="tel" name="phone" class="form-control-app" placeholder="506-555-0000" /></div>
+                <button type="submit" class="btn-app primary" style="width:100%;justify-content:center;padding:14px;font-size:16px;margin-top:8px">Create account →</button>
+            </form>
+            <div style="text-align:center;margin-top:18px;padding-top:16px;border-top:1px solid #F3F4F6">
+                <p style="font-size:14px;color:#9CA3AF">Already have an account? <a asp-action="Login" style="color:#2C5F8A;font-weight:700;text-decoration:none">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+</div>

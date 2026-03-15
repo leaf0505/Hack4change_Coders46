@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Import from Excel";
+    var errors = ViewBag.Errors as List<string>;
+}
+<div style="max-width:680px;margin:0 auto;padding:28px 20px 48px">
+    <div style="margin-bottom:20px;font-size:13px;color:#9CA3AF;font-family:-apple-system,sans-serif">
+        <a asp-action="Dashboard" style="color:#9CA3AF;text-decoration:none">Dashboard</a> › <span style="color:#1F2937">Import from Excel</span>
+    </div>
+    <h1 style="font-size:22px;font-weight:700;color:#1F2937;font-family:Georgia,serif;margin-bottom:4px">Import needs from Excel</h1>
+    <p style="font-size:14px;color:#9CA3AF;margin-bottom:24px">Upload a spreadsheet to add multiple needs at once — no manual entry required.</p>
+
+    @if (errors != null && errors.Any()) {
+        <div class="app-alert error" style="margin-bottom:20px">
+            <div><strong>The file could not be read:</strong>
+                <ul style="margin:6px 0 0 16px;padding:0">@foreach (var e in errors) { <li>@e</li> }</ul>
+            </div>
+        </div>
+    }
+
+    <div class="card-app" style="margin-bottom:16px">
+        <div style="padding:40px 24px;text-align:center;border:2px dashed #CBD5E0;border-radius:12px;margin:12px;cursor:pointer;transition:all .15s"
+             id="drop-zone"
+             ondragover="event.preventDefault();this.style.borderColor='#2C5F8A';this.style.background='#EBF2F9'"
+             ondragleave="this.style.borderColor='#CBD5E0';this.style.background='transparent'"
+             ondrop="event.preventDefault();this.style.borderColor='#CBD5E0';this.style.background='transparent';document.getElementById('file-input').files=event.dataTransfer.files;showFile(event.dataTransfer.files[0]?.name)">
+            <div style="width:56px;height:56px;background:#EBF2F9;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px">📊</div>
+            <div style="font-size:17px;font-weight:700;color:#1F2937;margin-bottom:6px;font-family:Georgia,serif">Drop your Excel file here</div>
+            <div style="font-size:14px;color:#9CA3AF;margin-bottom:20px;line-height:1.65">Drag and drop your .xlsx file, or click the button below to select it.<br>We will show you a preview before saving anything.</div>
+            <form asp-action="PreviewExcel" method="post" enctype="multipart/form-data" id="upload-form">
+                @Html.AntiForgeryToken()
+                <input type="file" name="file" id="file-input" accept=".xlsx" style="display:none" onchange="showFile(this.files[0]?.name)" required />
+                <button type="button" class="btn-app primary" onclick="document.getElementById('file-input').click()">Choose file</button>
+                <div id="file-name" style="font-size:14px;color:#374151;margin-top:12px;font-weight:600"></div>
+                <button type="submit" id="upload-btn" class="btn-app success" style="display:none;margin-top:12px">Upload &amp; preview →</button>
+            </form>
+            <div style="font-size:12px;color:#D1D5DB;margin-top:12px">.xlsx files only · max 10 MB</div>
+        </div>
+    </div>
+
+    <div class="card-app">
+        <div class="card-app-header">
+            <span class="card-app-title">Required column format</span>
+            <a class="btn-app outline" asp-action="DownloadTemplate" style="padding:6px 14px;font-size:13px">⬇ Download template</a>
+        </div>
+        <table class="table-app">
+            <thead><tr><th>Column name</th><th>Required?</th><th>Example</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td><code style="background:#F3F4F6;padding:2px 7px;border-radius:4px;font-size:13px">ItemName</code></td><td><span class="prio critical" style="font-size:10px">Required</span></td><td style="color:#6B7280">Winter coats</td><td style="color:#9CA3AF;font-size:13px">Name of the item needed</td></tr>
+                <tr><td><code style="background:#F3F4F6;padding:2px 7px;border-radius:4px;font-size:13px">Category</code></td><td><span class="prio low" style="font-size:10px">Optional</span></td><td style="color:#6B7280">clothing</td><td style="color:#9CA3AF;font-size:13px">food, clothing, hygiene, bedding, beds, other</td></tr>
+                <tr><td><code style="background:#F3F4F6;padding:2px 7px;border-radius:4px;font-size:13px">QuantityNeeded</code></td><td><span class="prio critical" style="font-size:10px">Required</span></td><td style="color:#6B7280">30</td><td style="color:#9CA3AF;font-size:13px">Positive whole number</td></tr>
+                <tr><td><code style="background:#F3F4F6;padding:2px 7px;border-radius:4px;font-size:13px">Priority</code></td><td><span class="prio low" style="font-size:10px">Optional</span></td><td style="color:#6B7280">Critical</td><td style="color:#9CA3AF;font-size:13px">Critical, Normal, or Low (default: Normal)</td></tr>
+            </tbody>
+        </table>
+        <div style="padding:12px 16px;font-size:13px;color:#9CA3AF;border-top:1px solid #F3F4F6;background:#F9FAFB">💡 The first row must contain the exact column names shown above. Empty rows are automatically skipped.</div>
+    </div>
+</div>
+@section Scripts {
+<script>
+function showFile(name) {
+    if (!name) return;
+    document.getElementById('file-name').textContent = '📄 ' + name;
+    document.getElementById('upload-btn').style.display = 'inline-flex';
+}
+</script>
+}

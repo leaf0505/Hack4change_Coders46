@@ -1,0 +1,162 @@
+@model mvc_final_final.Models.Need
+@{
+    ViewData["Title"] = "Donate — " + Model.ItemName;
+    var savedEmail = ViewBag.SavedEmail as string ?? "";
+    var savedName  = ViewBag.SavedName  as string ?? "";
+
+    string prioClass, prioLabel, donateIcon;
+
+    if (Model.Priority == mvc_final_final.Models.Priority.Critical)      { prioClass = "critical"; prioLabel = "Urgent"; }
+    else if (Model.Priority == mvc_final_final.Models.Priority.Normal)   { prioClass = "normal";   prioLabel = "Normal"; }
+    else                                                                   { prioClass = "low";      prioLabel = "Low priority"; }
+
+    if (Model.Category == "food")          donateIcon = "🥫";
+    else if (Model.Category == "clothing") donateIcon = "🧥";
+    else if (Model.Category == "hygiene")  donateIcon = "🧼";
+    else if (Model.Category == "bedding")  donateIcon = "🛏️";
+    else if (Model.Category == "beds")     donateIcon = "🛒";
+    else                                   donateIcon = "📦";
+}
+
+<style>
+    .donate-page { max-width: 540px; margin: 0 auto; padding: 28px 20px 48px; }
+    .back-link { display: inline-flex; align-items: center; gap: 5px; font-size: 14px; color: #2C5F8A; font-weight: 700; text-decoration: none; margin-bottom: 20px; }
+    .back-link:hover { text-decoration: underline; }
+
+    .need-banner { background: #2C5F8A; border-radius: 14px; padding: 24px; margin-bottom: 18px; color: #fff; }
+    .nb-top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .nb-icon { width: 56px; height: 56px; background: rgba(255,255,255,0.15); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+    .nb-name { font-size: 21px; font-weight: 700; color: #fff; font-family: Georgia, serif; }
+    .nb-org  { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+    .nb-prio { margin-left: auto; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .nb-prio.critical { background: rgba(220,38,38,0.25); color: #FCA5A5; border: 1.5px solid rgba(220,38,38,0.3); }
+    .nb-prio.normal   { background: rgba(217,119,6,0.25);  color: #FCD34D; border: 1.5px solid rgba(217,119,6,0.3); }
+    .nb-prio.low      { background: rgba(5,150,105,0.25);  color: #6EE7B7; border: 1.5px solid rgba(5,150,105,0.3); }
+    .nb-prog-label { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 8px; font-weight: 600; }
+    .nb-prog-track { height: 10px; background: rgba(255,255,255,0.15); border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+    .nb-prog-fill  { height: 100%; background: rgba(255,255,255,0.8); border-radius: 5px; }
+    .nb-remaining  { font-size: 14px; color: rgba(255,255,255,0.75); }
+    .nb-remaining strong { color: #fff; font-weight: 700; }
+
+    .impact-bar { background: #ECFDF5; border: 2px solid #A7F3D0; border-radius: 9px; padding: 13px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #065F46; font-weight: 600; }
+
+    .form-card { background: #fff; border: 2px solid #E8EEF3; border-radius: 14px; overflow: hidden; }
+    .form-card-header { padding: 16px 22px; border-bottom: 2px solid #E8EEF3; }
+    .form-card-title  { font-size: 16px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; }
+    .form-card-sub    { font-size: 13px; color: #9CA3AF; margin-top: 3px; }
+    .form-card-body   { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+    .form-card-footer { padding: 16px 22px; border-top: 2px solid #E8EEF3; display: flex; gap: 10px; }
+    .form-divider { height: 1px; background: #E8EEF3; }
+
+    .qty-stepper { display: flex; align-items: stretch; border: 2px solid #D1D9E0; border-radius: 8px; overflow: hidden; background: #F9FAFB; }
+    .qty-btn { width: 52px; background: transparent; border: none; font-size: 24px; font-weight: 700; color: #2C5F8A; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .1s; flex-shrink: 0; }
+    .qty-btn:hover { background: #EBF2F9; }
+    .qty-num { width: 80px; text-align: center; font-size: 22px; font-weight: 700; color: #1F2937; border-left: 2px solid #D1D9E0; border-right: 2px solid #D1D9E0; background: #fff; padding: 10px 0; font-family: Georgia, serif; }
+    .qty-max { font-size: 13px; color: #9CA3AF; margin-top: 6px; }
+
+    .cookie-row { background: #F9FAFB; border: 2px solid #E8EEF3; border-radius: 9px; padding: 13px 15px; display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #6B7280; line-height: 1.55; }
+    .btn-confirm { flex: 1; padding: 14px 20px; background: #2C5F8A; border: none; border-radius: 9px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s; font-family: Georgia, serif; }
+    .btn-confirm:hover { background: #1E4A6E; }
+    .btn-cancel { padding: 14px 20px; background: transparent; border: 2px solid #CBD5E0; border-radius: 9px; font-size: 14px; font-weight: 600; color: #6B7280; cursor: pointer; transition: all .15s; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-cancel:hover { background: #F9FAFB; }
+</style>
+
+<div class="donate-page">
+    <a class="back-link" asp-controller="Donor" asp-action="Index">← Back to all needs</a>
+
+    <div class="need-banner">
+        <div class="nb-top">
+            <div class="nb-icon">@donateIcon</div>
+            <div>
+                <div class="nb-name">@Model.ItemName</div>
+                <div class="nb-org">@Model.Organisation?.Name · @Model.Category</div>
+            </div>
+            <span class="nb-prio @prioClass">@prioLabel</span>
+        </div>
+        <div class="nb-prog-label">
+            <span>Progress</span>
+            <span>@Model.QuantityReceived of @Model.QuantityNeeded collected</span>
+        </div>
+        <div class="nb-prog-track">
+            <div class="nb-prog-fill" style="width:@(Model.CompletionPercent)%"></div>
+        </div>
+        <div class="nb-remaining">Still needed: <strong>@Model.QuantityRemaining @Model.ItemName.ToLower()</strong></div>
+    </div>
+
+    <div class="impact-bar" id="impact-bar">
+        ✨ By donating <strong id="impact-qty">1 item</strong>, you will cover <strong id="impact-pct">0%</strong> of what is still needed.
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="form-card-title">Your information</div>
+            <div class="form-card-sub">No account needed — takes less than a minute</div>
+        </div>
+
+        <form asp-action="Donate" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="needId" value="@Model.Id" />
+
+            <div class="form-card-body">
+                <div class="form-group-app">
+                    <label class="form-label-app">Your name <span class="req">*</span></label>
+                    <input type="text" name="donorName" class="form-control-app" value="@savedName" placeholder="e.g. Mary Johnson" required />
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-group-app" style="margin-bottom:0">
+                    <label class="form-label-app">Email address <span class="req">*</span></label>
+                    <input type="email" name="donorEmail" class="form-control-app" value="@savedEmail" placeholder="you@example.com" required />
+                    <div class="form-hint-app">📧 We will notify you when similar urgent needs appear. Your email is never shared.</div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-group-app" style="margin-bottom:0">
+                    <label class="form-label-app">How many can you donate? <span class="req">*</span></label>
+                    <div class="qty-stepper">
+                        <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+                        <div class="qty-num" id="qty-display">1</div>
+                        <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+                    </div>
+                    <input type="hidden" name="quantity" id="qty-hidden" value="1" />
+                    <div class="qty-max">Maximum: @Model.QuantityRemaining</div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-group-app" style="margin-bottom:0">
+                    <label class="form-label-app">A message <span style="font-weight:400;color:#9CA3AF">(optional)</span></label>
+                    <textarea name="message" class="form-control-app" rows="2" placeholder="Share a word of encouragement for the organisation..."></textarea>
+                </div>
+
+                <div class="cookie-row">
+                    <span style="font-size:18px;flex-shrink:0">🔖</span>
+                    <span>Your name and email will be remembered for 30 days so you do not have to type them again next time.</span>
+                </div>
+            </div>
+
+            <div class="form-card-footer">
+                <a class="btn-cancel" asp-controller="Donor" asp-action="Index">Cancel</a>
+                <button type="submit" class="btn-confirm">✓ Confirm my donation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const maxQty = @Model.QuantityRemaining;
+    let qty = 1;
+    function changeQty(d) {
+        qty = Math.max(1, Math.min(maxQty, qty + d));
+        document.getElementById('qty-display').textContent = qty;
+        document.getElementById('qty-hidden').value = qty;
+        const pct = maxQty > 0 ? ((qty / maxQty) * 100).toFixed(1) : 0;
+        document.getElementById('impact-qty').textContent = qty + ' item' + (qty > 1 ? 's' : '');
+        document.getElementById('impact-pct').textContent = pct + '%';
+    }
+    changeQty(0);
+</script>
+}

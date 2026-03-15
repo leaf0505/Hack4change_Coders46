@@ -1,0 +1,122 @@
+@model List<mvc_final_final.Models.Need>
+@{
+    ViewData["Title"] = "Current Needs";
+    var categories = ViewBag.Categories as List<string> ?? new();
+    var selected   = ViewBag.SelectedCategory as string;
+    var critical   = Model.Where(n => n.Priority == mvc_final_final.Models.Priority.Critical).ToList();
+    var other      = Model.Where(n => n.Priority != mvc_final_final.Models.Priority.Critical).ToList();
+}
+
+<style>
+    .hero { background: #2C5F8A; padding: 52px 24px 56px; text-align: center; }
+    .hero-accent { width: 60px; height: 4px; background: #E8A020; border-radius: 2px; margin: 0 auto 20px; }
+    .hero h1 { font-size: 36px; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 14px; font-family: Georgia, serif; }
+    .hero p  { font-size: 17px; color: rgba(255,255,255,0.82); max-width: 480px; margin: 0 auto 36px; line-height: 1.75; }
+    .hero-stats { display: flex; justify-content: center; gap: 0; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 0; max-width: 480px; margin: 0 auto; }
+    .hero-stat { flex: 1; text-align: center; border-right: 1px solid rgba(255,255,255,0.2); }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-num { font-size: 28px; font-weight: 700; color: #fff; font-family: Georgia, serif; }
+    .hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .how-section { background: #F0F5FB; border-bottom: 2px solid #D6E4F0; padding: 28px 24px; }
+    .how-title { text-align: center; font-size: 20px; font-weight: 700; color: #2C5F8A; margin-bottom: 20px; font-family: Georgia, serif; }
+    .how-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; max-width: 680px; margin: 0 auto; }
+    .how-step { background: #fff; border: 2px solid #D6E4F0; border-radius: 10px; padding: 20px 16px; text-align: center; }
+    .how-num  { width: 44px; height: 44px; background: #2C5F8A; color: #fff; border-radius: 50%; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-family: Georgia, serif; }
+    .how-step-title { font-size: 15px; font-weight: 700; color: #1F2937; margin-bottom: 5px; font-family: Georgia, serif; }
+    .how-step-desc  { font-size: 13px; color: #6B7280; line-height: 1.6; }
+    .filter-bar { background: #fff; border-bottom: 2px solid #E8EEF3; padding: 14px 24px; display: flex; align-items: center; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-lbl { font-size: 14px; color: #6B7280; white-space: nowrap; font-weight: 600; }
+    .filter-chip { padding: 8px 18px; border-radius: 6px; border: 2px solid #D1D9E0; font-size: 14px; font-weight: 600; color: #4A5568; cursor: pointer; white-space: nowrap; background: #fff; transition: all .15s; text-decoration: none; display: inline-block; }
+    .filter-chip:hover { border-color: #2C5F8A; color: #2C5F8A; }
+    .filter-chip.active { background: #EBF2F9; border-color: #2C5F8A; color: #2C5F8A; }
+    .main { padding: 28px 24px; }
+    .section-hdr { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 2px solid #E8EEF3; margin-bottom: 18px; }
+    .section-hdr-title { font-size: 16px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; display: flex; align-items: center; gap: 8px; }
+    .section-hdr-count { font-size: 13px; color: #9CA3AF; font-weight: 600; }
+    .needs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 16px; margin-bottom: 32px; }
+    .need-card { background: #fff; border: 2px solid #E8EEF3; border-radius: 12px; padding: 22px; cursor: pointer; transition: all .18s; display: flex; flex-direction: column; gap: 15px; }
+    .need-card:hover { border-color: #2C5F8A; box-shadow: 0 4px 16px rgba(44,95,138,0.12); transform: translateY(-2px); }
+    .need-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .need-card-title { font-size: 17px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; }
+    .need-card-org   { font-size: 13px; color: #9CA3AF; margin-top: 3px; font-weight: 500; }
+    .prog-head { display: flex; justify-content: space-between; font-size: 13px; color: #6B7280; margin-bottom: 7px; font-weight: 600; }
+    .prog-remaining { font-size: 13px; color: #6B7280; margin-top: 6px; }
+    .prog-remaining strong { color: #1F2937; font-weight: 700; font-size: 15px; }
+    .btn-donate { width: 100%; padding: 14px; background: #2C5F8A; border: none; border-radius: 8px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s; font-family: Georgia, serif; text-decoration: none; }
+    .btn-donate:hover { background: #1E4A6E; color: #fff; }
+    .empty-state { text-align: center; padding: 40px; background: #fff; border: 2px solid #E8EEF3; border-radius: 12px; }
+</style>
+
+<div class="hero">
+    <div class="hero-accent"></div>
+    <h1>Your kindness makes<br>a real difference</h1>
+    <p>Local organisations need your support. Browse what's needed, choose how you can help, and donate in just a few clicks — no account required.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">@Model.Count</div><div class="hero-stat-lbl">Needs open</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">@Model.Select(n => n.OrganisationId).Distinct().Count()</div><div class="hero-stat-lbl">Organisations</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">@Model.Sum(n => n.QuantityReceived)</div><div class="hero-stat-lbl">Items donated</div></div>
+    </div>
+</div>
+
+<div class="how-section">
+    <div class="how-title">How it works — 3 simple steps</div>
+    <div class="how-steps">
+        <div class="how-step"><div class="how-num">1</div><div class="how-step-title">Browse the needs</div><div class="how-step-desc">See exactly what each organisation is asking for right now</div></div>
+        <div class="how-step"><div class="how-num">2</div><div class="how-step-title">Choose &amp; fill in</div><div class="how-step-desc">Enter your name, email address, and how many items you can donate</div></div>
+        <div class="how-step"><div class="how-num">3</div><div class="how-step-title">All done!</div><div class="how-step-desc">The progress bar updates immediately so everyone can see the impact</div></div>
+    </div>
+</div>
+
+<div class="filter-bar">
+    <span class="filter-lbl">Show:</span>
+    <a asp-action="Index" class="filter-chip @(selected == null ? "active" : "")">All categories</a>
+    @foreach (var cat in categories)
+    {
+        <a asp-action="Index" asp-route-category="@cat" class="filter-chip @(selected == cat ? "active" : "")">@cat</a>
+    }
+</div>
+
+<div class="main">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div style="font-size:44px;margin-bottom:12px">✅</div>
+            <div style="font-size:16px;color:#6B7280;font-family:Georgia,serif">All needs are currently met. Check back soon!</div>
+        </div>
+    }
+
+    @if (critical.Any())
+    {
+        <div class="section-hdr">
+            <span class="section-hdr-title">
+                <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#DC2626" opacity="0.15"/><circle cx="7" cy="7" r="3.5" fill="#DC2626"/></svg>
+                Most urgent — please help first
+            </span>
+            <span class="section-hdr-count">@critical.Count critical need(s)</span>
+        </div>
+        <div class="needs-grid">
+            @foreach (var need in critical)
+            {
+                <partial name="_NeedCardBoomer" model="need" />
+            }
+        </div>
+    }
+
+    @if (other.Any())
+    {
+        <div class="section-hdr">
+            <span class="section-hdr-title">
+                <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#D97706" opacity="0.15"/><circle cx="7" cy="7" r="3.5" fill="#D97706"/></svg>
+                Other needs
+            </span>
+            <span class="section-hdr-count">@other.Count active need(s)</span>
+        </div>
+        <div class="needs-grid">
+            @foreach (var need in other)
+            {
+                <partial name="_NeedCardBoomer" model="need" />
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,42 @@
+@model mvc_final_final.Models.Need
+@{
+    string icon, iconClass, barClass, prioClass, prioLabel;
+
+    if (Model.Category == "food")          { icon = "🥫"; iconClass = "food"; }
+    else if (Model.Category == "clothing") { icon = "🧥"; iconClass = "clothing"; }
+    else if (Model.Category == "hygiene")  { icon = "🧼"; iconClass = "hygiene"; }
+    else if (Model.Category == "bedding")  { icon = "🛏️"; iconClass = "bedding"; }
+    else                                   { icon = "📦"; iconClass = "other"; }
+
+    if (Model.CompletionPercent < 35)      barClass = "critical";
+    else if (Model.CompletionPercent < 70) barClass = "medium";
+    else                                   barClass = "good";
+
+    if (Model.Priority == mvc_final_final.Models.Priority.Critical)    { prioClass = "critical"; prioLabel = "Urgent"; }
+    else if (Model.Priority == mvc_final_final.Models.Priority.Normal) { prioClass = "normal";   prioLabel = "Normal"; }
+    else                                                                { prioClass = "low";      prioLabel = "Low priority"; }
+}
+
+<div class="need-card">
+    <div class="need-card-top">
+        <div class="need-card-icon @iconClass">@icon</div>
+        <span class="prio @prioClass">@prioLabel</span>
+    </div>
+    <div>
+        <div class="need-card-title">@Model.ItemName</div>
+        <div class="need-card-org">@(Model.Organisation?.Name ?? "") · @Model.Category</div>
+    </div>
+    <div>
+        <div class="prog-head">
+            <span>Progress</span>
+            <span>@Model.QuantityReceived out of @Model.QuantityNeeded collected</span>
+        </div>
+        <div class="progress-app">
+            <div class="progress-app-fill @barClass" style="width:@(Model.CompletionPercent)%"></div>
+        </div>
+        <div class="prog-remaining">Still needed: <strong>@Model.QuantityRemaining items</strong></div>
+    </div>
+    <a asp-controller="Donor" asp-action="Donate" asp-route-id="@Model.Id" class="btn-donate">
+        Donate this item →
+    </a>
+</div>

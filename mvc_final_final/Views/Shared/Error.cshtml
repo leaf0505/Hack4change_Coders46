@@ -1,0 +1,11 @@
+@model mvc_final_final.Models.ErrorViewModel
+@{ ViewData["Title"] = "Error"; }
+<div style="min-height:calc(100vh - 112px);display:flex;align-items:center;justify-content:center;padding:20px;text-align:center">
+    <div>
+        <div style="font-size:56px;margin-bottom:16px">⚠️</div>
+        <h2 style="font-size:22px;font-weight:700;color:#1F2937;margin-bottom:8px;font-family:Georgia,serif">Something went wrong</h2>
+        <p style="font-size:15px;color:#9CA3AF;margin-bottom:24px">An unexpected error occurred. Please try again.</p>
+        @if (Model.ShowRequestId) { <p style="font-size:12px;color:#D1D5DB;margin-bottom:20px">Request ID: <code>@Model.RequestId</code></p> }
+        <a class="btn-app primary" asp-controller="Donor" asp-action="Index">← Back to home</a>
+    </div>
+</div>

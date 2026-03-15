@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DonationApp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #FAFAF8; color: #2C2C2C; padding-bottom: 56px; }
+        h1,h2,h3,h4,h5,h6,.font-serif { font-family: Georgia, 'Times New Roman', serif; }
+
+        .app-nav { background: #fff; border-bottom: 3px solid #2C5F8A; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+        .app-nav-brand { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #2C5F8A; font-family: Georgia, serif; text-decoration: none; }
+        .app-nav-logo { width: 40px; height: 40px; background: #2C5F8A; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .app-nav-right { display: flex; align-items: center; gap: 10px; }
+        .app-nav-link { font-size: 15px; color: #4A5568; text-decoration: none; padding: 6px 12px; border-radius: 6px; transition: all .15s; font-weight: 500; }
+        .app-nav-link:hover { background: #F0F5FB; color: #2C5F8A; }
+        .app-nav-link.active { color: #2C5F8A; font-weight: 700; }
+        .app-nav-btn { background: #2C5F8A; border: none; border-radius: 6px; padding: 10px 22px; font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; font-family: Georgia, serif; transition: background .15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .app-nav-btn:hover { background: #1E4A6E; color: #fff; }
+        .app-nav-btn.outline { background: transparent; border: 2px solid #CBD5E0; color: #4A5568; }
+        .app-nav-btn.outline:hover { background: #F7FAFC; }
+
+        .app-alert { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border-radius: 8px; font-size: 14px; margin: 12px 24px 0; position: relative; font-family: -apple-system, sans-serif; }
+        .app-alert.success { background: #ECFDF5; border: 2px solid #A7F3D0; color: #065F46; }
+        .app-alert.error   { background: #FEF2F2; border: 2px solid #FECACA; color: #B91C1C; }
+        .app-alert.info    { background: #EFF6FF; border: 2px solid #BFDBFE; color: #1E40AF; }
+        .app-alert-close   { position: absolute; top: 10px; right: 14px; background: none; border: none; font-size: 20px; color: inherit; cursor: pointer; opacity: 0.5; line-height: 1; }
+        .app-alert-close:hover { opacity: 1; }
+
+        .app-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 2px solid #E8EEF3; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #9CA3AF; font-family: -apple-system, sans-serif; }
+
+        .btn-app { padding: 10px 22px; border-radius: 7px; font-size: 15px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all .15s; text-decoration: none; border: none; font-family: Georgia, serif; }
+        .btn-app.primary { background: #2C5F8A; color: #fff; }
+        .btn-app.primary:hover { background: #1E4A6E; color: #fff; }
+        .btn-app.outline { background: transparent; border: 2px solid #CBD5E0; color: #4A5568; font-family: -apple-system, sans-serif; font-weight: 600; }
+        .btn-app.outline:hover { background: #F7FAFC; }
+        .btn-app.success { background: #059669; color: #fff; }
+        .btn-app.success:hover { background: #047857; color: #fff; }
+        .btn-app.danger  { background: transparent; border: 2px solid #FECACA; color: #B91C1C; font-family: -apple-system, sans-serif; font-size: 13px; padding: 6px 12px; }
+        .btn-app.danger:hover { background: #FEF2F2; }
+
+        .card-app { background: #fff; border: 2px solid #E8EEF3; border-radius: 12px; overflow: hidden; }
+        .card-app-header { padding: 14px 20px; border-bottom: 2px solid #E8EEF3; display: flex; align-items: center; justify-content: space-between; }
+        .card-app-title { font-size: 16px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; }
+
+        .progress-app { height: 10px; background: #F3F4F6; border-radius: 5px; overflow: hidden; }
+        .progress-app-fill { height: 100%; border-radius: 5px; }
+        .progress-app-fill.critical { background: #DC2626; }
+        .progress-app-fill.medium   { background: #D97706; }
+        .progress-app-fill.good     { background: #059669; }
+
+        .prio { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.05em; font-family: -apple-system, sans-serif; }
+        .prio.critical { background: #FEE2E2; color: #B91C1C; border: 1.5px solid #FECACA; }
+        .prio.normal   { background: #FEF3C7; color: #92400E; border: 1.5px solid #FDE68A; }
+        .prio.low      { background: #D1FAE5; color: #065F46; border: 1.5px solid #A7F3D0; }
+
+        .stat-card { background: #fff; border: 2px solid #E8EEF3; border-radius: 10px; padding: 16px; }
+        .stat-card-label { font-size: 12px; color: #9CA3AF; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-family: -apple-system, sans-serif; }
+        .stat-card-value { font-size: 28px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; }
+        .stat-card-sub   { font-size: 13px; color: #9CA3AF; margin-top: 4px; font-family: -apple-system, sans-serif; }
+
+        .form-group-app { margin-bottom: 18px; }
+        .form-label-app { display: block; font-size: 14px; font-weight: 700; color: #374151; margin-bottom: 8px; font-family: -apple-system, sans-serif; }
+        .form-label-app .req { color: #DC2626; margin-left: 2px; }
+        .form-control-app { width: 100%; background: #F9FAFB; border: 2px solid #D1D9E0; border-radius: 8px; padding: 11px 16px; font-size: 15px; color: #1F2937; font-family: -apple-system, sans-serif; transition: border-color .15s, box-shadow .15s; outline: none; }
+        .form-control-app:focus { border-color: #2C5F8A; background: #fff; box-shadow: 0 0 0 3px rgba(44,95,138,0.1); }
+        .form-hint-app { font-size: 13px; color: #9CA3AF; margin-top: 5px; font-family: -apple-system, sans-serif; }
+
+        .table-app { width: 100%; border-collapse: collapse; }
+        .table-app thead th { text-align: left; font-size: 12px; font-weight: 700; color: #6B7280; padding: 10px 16px; background: #F9FAFB; border-bottom: 2px solid #E8EEF3; text-transform: uppercase; letter-spacing: 0.05em; font-family: -apple-system, sans-serif; }
+        .table-app tbody tr { border-bottom: 1px solid #F3F4F6; }
+        .table-app tbody tr:last-child { border-bottom: none; }
+        .table-app tbody tr:hover { background: #F9FAFB; }
+        .table-app tbody td { padding: 13px 16px; font-size: 14px; color: #374151; vertical-align: middle; font-family: -apple-system, sans-serif; }
+
+        .page-header { padding: 24px 24px 0; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .page-title    { font-size: 24px; font-weight: 700; color: #1F2937; font-family: Georgia, serif; }
+        .page-subtitle { font-size: 14px; color: #9CA3AF; margin-top: 3px; font-family: -apple-system, sans-serif; }
+        .page-content  { padding: 0 24px; }
+
+        .need-card-icon { width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+        .need-card-icon.food     { background: #FEF3C7; }
+        .need-card-icon.clothing { background: #DBEAFE; }
+        .need-card-icon.hygiene  { background: #D1FAE5; }
+        .need-card-icon.bedding  { background: #EDE9FE; }
+        .need-card-icon.other    { background: #F3F4F6; }
+    </style>
+</head>
+<body>
+
+<nav class="app-nav">
+    <a class="app-nav-brand" asp-controller="Donor" asp-action="Index">
+        <div class="app-nav-logo">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M11 3L13.5 8.5H19.5L14.8 12L16.5 18L11 14.8L5.5 18L7.2 12L2.5 8.5H8.5L11 3Z" fill="white"/>
+            </svg>
+        </div>
+        DonationApp
+    </a>
+    <div class="app-nav-right">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a class="app-nav-link" asp-controller="Organisation" asp-action="Dashboard">Dashboard</a>
+            <a class="app-nav-link" asp-controller="Organisation" asp-action="ImportExcel">Import Excel</a>
+            <span style="font-size:14px;color:#9CA3AF">@User.Identity.Name</span>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="app-nav-btn outline">Sign out</button>
+            </form>
+        }
+        else
+        {
+            <a class="app-nav-btn" asp-controller="Account" asp-action="Login">Organisation Login</a>
+        }
+    </div>
+</nav>
+
+@if (TempData["Success"] != null) {
+    <div class="app-alert success">✅ @TempData["Success"]<button class="app-alert-close" onclick="this.parentElement.remove()">×</button></div>
+}
+@if (TempData["Error"] != null) {
+    <div class="app-alert error">❌ @TempData["Error"]<button class="app-alert-close" onclick="this.parentElement.remove()">×</button></div>
+}
+@if (TempData["Info"] != null) {
+    <div class="app-alert info">ℹ️ @TempData["Info"]<button class="app-alert-close" onclick="this.parentElement.remove()">×</button></div>
+}
+
+<main>@RenderBody()</main>
+
+<footer class="app-footer">© 2026 DonationApp — Connecting donations to real needs</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
