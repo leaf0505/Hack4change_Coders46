@@ -1,4 +1,4 @@
-# DonationApp — Hack4Change 2025
+# DonationApp — Hack4Change 2026
 
 ## What it does
 DonationApp connects community organisations with donors in real time.
