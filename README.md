@@ -89,7 +89,7 @@ Then press F5 again.
 - Entity Framework Core + SQLite
 - EPPlus (Excel import)
 
-###### What AI did:**
+What AI did:**
 - Generated the majority of the view files (.cshtml) including layout, 
   styling, and Razor syntax
 - Helped debug build errors
@@ -97,7 +97,7 @@ Then press F5 again.
 - Suggested the surplus redistribution architecture in SurplusService
 - Generated this README
 
-######## What we did:**
+What we did:**
 - Defined the full data model and relationships between organisations, 
   needs and donors
 - Made all architectural decisions (ASP.NET Core MVC, SQLite, 
