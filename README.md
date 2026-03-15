@@ -3,8 +3,7 @@
 ## What it does
 DonationApp connects community organisations with donors in real time.
 Organisations post what they need. Donors give in under 60 seconds — 
-no account required. Surplus items are automatically redistributed 
-to other organisations in the network.
+no account required.
 
 ## How to run
 
